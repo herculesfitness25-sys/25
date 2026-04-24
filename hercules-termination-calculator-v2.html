@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赫力健身 — 解約試算 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --card: #1a1a1a;
+    --border: #282828;
+    --accent: #e8c44a;
+    --accent2: #ff5533;
+    --green: #4caf50;
+    --text: #f0ede8;
+    --muted: #777;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 3px; color: var(--accent); line-height: 1; }
+  .logo-sub { font-size: 0.65rem; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-top: 3px; }
+  .back-btn { background: transparent; border: 1px solid #333; color: #888; font-size: 0.72rem; letter-spacing: 2px; padding: 6px 14px; border-radius: 2px; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all .2s; }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .badge { margin-left: auto; background: var(--accent2); color: #fff; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; padding: 4px 10px; border-radius: 2px; text-transform: uppercase; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 40px 20px 0; }
+
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 4px; margin-bottom: 4px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 32px; }
+
+  /* Law notice banner */
+  .law-banner {
+    background: rgba(232,196,74,0.06);
+    border: 1px solid rgba(232,196,74,0.3);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 18px;
+    font-size: 0.8rem;
+    color: #bbb;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .law-banner strong { color: var(--accent); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 26px; margin-bottom: 20px; }
+  .card-title { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 0.78rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 7px; }
+  label .req { color: var(--accent2); }
+  label .tip { color: #555; font-size: 0.72rem; margin-left: 6px; font-weight: 300; }
+
+  input[type="number"], input[type="date"] {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 14px; border-radius: 3px;
+    font-family: 'Noto Sans TC', sans-serif; font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:520px){ .two-col { grid-template-columns: 1fr; } }
+
+  .hint { background: rgba(255,255,255,0.03); border-left: 2px solid #333; padding: 10px 14px; font-size: 0.76rem; color: #888; line-height: 1.65; margin-top: 8px; border-radius: 0 3px 3px 0; }
+  .hint strong { color: #bbb; }
+
+  .calc-btn {
+    width: 100%; background: var(--accent); color: #0d0d0d; border: none;
+    padding: 15px; font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem;
+    letter-spacing: 4px; cursor: pointer; border-radius: 3px;
+    transition: all 0.2s; margin-top: 6px;
+  }
+  .calc-btn:hover { background: #f5d060; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(232,196,74,0.25); }
+  .calc-btn:active { transform: none; }
+
+  /* Results */
+  #result { display: none; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  .seven-banner {
+    background: rgba(76,175,80,0.1); border: 2px solid var(--green);
+    border-radius: 4px; padding: 24px; text-align: center;
+  }
+  .seven-banner .sb-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 3px; color: var(--green); margin-bottom: 8px; }
+  .seven-banner p { font-size: 0.85rem; color: #aaa; line-height: 1.7; }
+  .seven-banner strong { color: var(--green); }
+
+  /* Summary boxes */
+  .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media(max-width:560px){ .summary-row { grid-template-columns: 1fr 1fr; } }
+
+  .sbox { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 14px 16px; }
+  .sbox .sl { font-size: 0.66rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .sbox .sv { font-size: 1.05rem; font-weight: 500; }
+
+  /* Result highlight boxes */
+  .rbox { border-radius: 4px; padding: 20px 22px; margin-bottom: 14px; }
+  .rbox.fee { background: var(--bg); border: 2px solid var(--accent); }
+  .rbox.refund { background: var(--bg); border: 2px solid var(--green); }
+  .rbox.pay { background: var(--bg); border: 2px solid var(--accent2); }
+  .rbox .rl { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+  .rbox.fee .rl { color: var(--accent); }
+  .rbox.refund .rl { color: var(--green); }
+  .rbox.pay .rl { color: var(--accent2); }
+  .rbox .ra { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: 2px; line-height: 1; }
+  .rbox.fee .ra { color: var(--accent); }
+  .rbox.refund .ra { color: var(--green); }
+  .rbox.pay .ra { color: var(--accent2); }
+  .rbox .rs { font-size: 0.78rem; color: var(--muted); margin-top: 5px; }
+
+  .cap-alert {
+    background: rgba(255,85,51,0.1); border: 1px solid var(--accent2);
+    border-radius: 3px; padding: 11px 15px; font-size: 0.78rem;
+    color: #ff7755; margin-bottom: 14px; display: none; line-height: 1.5;
+  }
+
+  /* Breakdown table */
+  .breakdown { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .breakdown .bh { background: var(--surface); padding: 9px 16px; font-size: 0.66rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .brow { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+  .brow:last-child { border-bottom: none; }
+  .brow .bl { color: var(--muted); }
+  .brow .bv { font-family: monospace; font-size: 0.88rem; font-weight: 500; }
+  .brow.total { background: rgba(232,196,74,0.05); }
+  .brow.total .bl { color: #ccc; font-weight: 500; }
+  .brow.total .bv { color: var(--accent); font-size: 1rem; }
+  .brow.neg .bv { color: #ff7755; }
+  .brow.pos .bv { color: var(--green); }
+
+  /* Formula box */
+  .formula-section { margin-top: 20px; }
+  .formula-title { font-size: 0.66rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .formula-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media(max-width:520px){ .formula-grid { grid-template-columns: 1fr; } }
+
+  .formula-card { background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 12px 14px; }
+  .formula-card .fc-label { font-size: 0.65rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .formula-card .fc-formula { font-family: monospace; font-size: 0.82rem; color: #ccc; line-height: 1.6; }
+  .formula-card .fc-result { font-size: 0.9rem; color: var(--accent); font-weight: 500; margin-top: 5px; }
+
+  /* Notes */
+  .note-box { background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: 3px; padding: 14px 16px; font-size: 0.77rem; color: var(--muted); line-height: 1.85; margin-top: 16px; }
+  .note-box strong { color: #ccc; }
+
+  hr.div { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+  /* ── 定型化契約條文區 ── */
+  .law-section{max-width:820px;margin:0 auto;padding:0 20px 60px;}
+  .law-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--text);margin:28px 0 16px;display:flex;align-items:center;gap:10px;}
+  .law-section-title .lt{color:var(--accent);}
+  .law-section-title .lsubt{font-family:'Noto Sans TC',sans-serif;font-size:.6rem;font-weight:400;letter-spacing:2px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 9px;border-radius:2px;margin-left:auto;}
+  .law-item{border:1px solid var(--border);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+  .law-item-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .15s;}
+  .law-item-hd:hover{background:rgba(255,255,255,.02);}
+  .law-art{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:2px;color:var(--accent);white-space:nowrap;min-width:50px;}
+  .law-item-ttl{font-size:.81rem;color:#ccc;font-weight:500;}
+  .law-tbadge{margin-left:auto;font-size:.57rem;letter-spacing:1px;padding:2px 7px;border-radius:2px;font-weight:700;text-transform:uppercase;white-space:nowrap;}
+  .law-tbadge.core{background:rgba(255,85,51,.12);color:var(--accent2);border:1px solid rgba(255,85,51,.25);}
+  .law-tbadge.base{background:rgba(232,196,74,.12);color:var(--accent);border:1px solid rgba(232,196,74,.25);}
+  .law-tbadge.info{background:rgba(255,255,255,.04);color:#555;border:1px solid var(--border);}
+  .chev{font-size:.55rem;color:var(--muted);margin-left:6px;transition:transform .2s;}
+  .law-item.open .chev{transform:rotate(180deg);}
+  .law-item-bd{display:none;padding:14px 18px 16px;border-top:1px solid var(--border);background:rgba(255,255,255,.01);}
+  .law-item.open .law-item-bd{display:block;}
+  .lbt{font-size:.79rem;color:#999;line-height:1.85;}
+  .lbt strong{color:#ccc;}
+  .lbt p{margin-bottom:10px;}
+  .lformula{background:var(--bg);border-left:2px solid var(--accent);padding:9px 14px;margin:10px 0;font-family:monospace;font-size:.82rem;color:#ddd;border-radius:0 3px 3px 0;}
+  .lformula .lfn{font-family:'Noto Sans TC',sans-serif;font-size:.68rem;color:var(--muted);margin-top:4px;}
+  .lex{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:8px 12px;margin:8px 0;font-size:.77rem;color:#aaa;flex-wrap:wrap;}
+  .letag{font-size:.57rem;letter-spacing:2px;text-transform:uppercase;color:#555;background:var(--border);padding:2px 6px;border-radius:2px;white-space:nowrap;}
+  .lex strong{color:var(--accent);}
+  .ltable{border:1px solid var(--border);border-radius:3px;overflow:hidden;margin:10px 0;font-size:.79rem;}
+  .ltrow{display:grid;grid-template-columns:1fr 2fr;}
+  .ltrow>div{padding:8px 12px;border-bottom:1px solid var(--border);}
+  .ltrow:last-child>div{border-bottom:none;}
+  .ltrow.lthd{background:var(--bg);}
+  .ltrow.lthd>div{font-size:.63rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+  .lcap{display:flex;align-items:center;gap:14px;background:rgba(255,85,51,.06);border:1px solid rgba(255,85,51,.2);border-radius:3px;padding:11px 14px;margin:10px 0;}
+  .lcap-n{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent2);white-space:nowrap;}
+  .lcap-d{font-size:.77rem;color:#aaa;line-height:1.6;}
+  .lcap-d strong{color:var(--accent2);}
+  .lwarn{font-size:.71rem;color:#555;margin-top:8px;line-height:1.6;}
+
+  /* ── 區塊分隔器 ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 820px;
+    margin: 48px auto 0;
+    padding: 0 20px;
+    position: relative;
+  }
+  .sd-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #444, transparent);
+  }
+  .section-divider .sd-line:first-child {
+    background: linear-gradient(90deg, transparent, #333 40%, var(--accent) 100%);
+  }
+  .section-divider .sd-line:last-child {
+    background: linear-gradient(90deg, var(--accent) 0%, #333 60%, transparent);
+  }
+  .sd-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 20px;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 1rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+  .sd-icon {
+    font-size: 1.1rem;
+    opacity: 0.8;
+  }
+  /* Override law-section top margin since divider handles spacing */
+  .section-divider + .law-section .law-section-title {
+    margin-top: 24px;
+  }
+</style>
+
+<!-- ════ 區塊分隔 ════ -->
+<div class="section-divider">
+  <div class="sd-line"></div>
+  <div class="sd-label">
+    <span class="sd-icon">§</span>
+    法規條文依據
+  </div>
+  <div class="sd-line"></div>
+</div>
+
+<div class="law-section">
+  <div class="law-section-title">
+    <span class="lt">§</span> 定型化契約應記載及不得記載事項
+    <span class="lsubt">111年1月1日生效</span>
+  </div>
+
+  <div class="law-item open" onclick="this.classList.toggle('open')">
+    <div class="law-item-hd">
+      <span class="law-art">第 9 條</span>
+      <span class="law-item-ttl">月平均價格之計算</span>
+      <span class="law-tbadge base">計算基礎</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="law-item-bd">
+      <div class="lbt">
+        <p>本契約所稱「月平均價格」，指契約總金額除以契約月數（<strong>含業者贈與之會籍期間</strong>）所得之商，並<strong>四捨五入</strong>至元。</p>
+        <div class="lformula">月平均價格 ＝ 月費總額 ÷（合約月數 ＋ 贈送月數）→ 四捨五入<div class="lfn">贈送月份計入分母，使月平均降低，對消費者有利；月費以實際優惠價計算</div></div>
+        <div class="lex"><span class="letag">範例</span> $1,000 × 24月 ÷（24＋2）月 ＝ 923.07… → <strong>$923</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="law-item open" onclick="this.classList.toggle('open')">
+    <div class="law-item-hd">
+      <span class="law-art">第 10 條</span>
+      <span class="law-item-ttl">消費者提前終止契約之退費規定</span>
+      <span class="law-tbadge core">核心條文</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="law-item-bd">
+      <div class="lbt">
+        <p>消費者於契約期間屆滿前，得<strong>隨時終止契約</strong>。業者不得以任何條款限制消費者終止契約之權利，否則該條款無效。</p>
+        <p><strong>第1項：七日內全額退費</strong><br>契約生效<strong>七日內</strong>且消費者<strong>未使用服務</strong>而終止者，業者應<strong>全額退還</strong>已繳費用，不得扣收任何費用。</p>
+        <p><strong>第2項：七日後或已使用服務</strong></p>
+        <div class="ltable">
+          <div class="ltrow lthd"><div>繳費方式</div><div>退費計算</div></div>
+          <div class="ltrow"><div><strong>預繳全部費用</strong></div><div>退款 ＝ 已繳費用 －（月平均 × 計費月數）</div></div>
+          <div class="ltrow"><div><strong>月繳</strong></div><div>應付 ＝ 月平均 × 計費月數；不足補繳，有餘退還</div></div>
+        </div>
+        <div class="lwarn">※ 不足15日以半個月計；逾15日（含）以一個月計。</div>
+        <p><strong>第3項：手續費</strong></p>
+        <div class="lformula">手續費 ＝ 月平均價格 × 未到期月數（含贈送）× 20% → 四捨五入<div class="lfn">未到期月數 ＝ 總月數（含贈送）－ 已計費月數</div></div>
+        <div class="lex"><span class="letag">範例</span> $923 × 22月 × 20% ＝ 1,846.4… → <strong>$1,846</strong></div>
+        <p><strong>第4項：上限規定</strong></p>
+        <div class="lcap">
+          <div class="lcap-n">NT$6,000</div>
+          <div class="lcap-d"><strong>手續費 ＋ 消費者應補足金額，合計不得超過新臺幣六千元。</strong><br>若超過，業者應調整手續費使合計降至 $6,000。</div>
+        </div>
+        <p><strong>第5項：入會費／系統建置費</strong><br>系統建置費 $600 終止契約時<strong>得不列入退費計算範圍</strong>，即業者可不退還。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="law-item" onclick="this.classList.toggle('open')">
+    <div class="law-item-hd">
+      <span class="law-art">第 11 條</span>
+      <span class="law-item-ttl">約定使用期間屆滿後終止</span>
+      <span class="law-tbadge info">例外情形</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="law-item-bd">
+      <div class="lbt">
+        <p>會員於<strong>約定使用期間屆滿後</strong>終止契約者，業者<strong>不得收取任何手續費</strong>、違約金或任何名目費用。</p>
+        <div class="lwarn">※ 本合約第三條亦明定：期滿後終止，HF不得收取手續費或任何名目扣費。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="law-item" onclick="this.classList.toggle('open')">
+    <div class="law-item-hd">
+      <span class="law-art">第 20 條</span>
+      <span class="law-item-ttl">贈品不得向消費者請求返還或扣抵</span>
+      <span class="law-tbadge info">保護條款</span>
+      <span class="chev">▼</span>
+    </div>
+    <div class="law-item-bd">
+      <div class="lbt">
+        <p>業者<strong>不得</strong>向消費者請求返還贈品（含贈送月份），亦不得主張自應退還費用中<strong>扣除贈品價額</strong>。</p>
+        <div class="lwarn">※ 贈送月份僅影響月平均價格之計算分母，業者不可另行索取贈送期間費用。</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Defaults
+  const today = new Date();
+  document.getElementById('endDate').value = today.toISOString().split('T')[0];
+  const ago = new Date(today); ago.setMonth(ago.getMonth() - 4);
+  document.getElementById('startDate').value = ago.toISOString().split('T')[0];
+
+  function fmt(n) {
+    const rounded = Math.round(n);
+    return 'NT$\u00a0' + rounded.toLocaleString('zh-TW');
+  }
+  function fmtSigned(n) {
+    const rounded = Math.round(n);
+    if (rounded > 0) return '+' + fmt(n);
+    return fmt(n);
+  }
+
+  function daysBetween(d1, d2) {
+    return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  }
+
+  // Days → months: <15 days = 0.5 month, >=15 days = 1 month
+  function daysToMonths(days) {
+    const full = Math.floor(days / 30);
+    const rem = days % 30;
+    if (rem === 0) return full;
+    if (rem < 15) return full + 0.5;
+    return full + 1;
+  }
+
+  function r(n) { return Math.round(n); } // 四捨五入 helper
+
+  function calculate() {
+    const startVal = document.getElementById('startDate').value;
+    const endVal = document.getElementById('endDate').value;
+    const contractMonths = parseFloat(document.getElementById('contractMonths').value);
+    const bonusMonths = parseFloat(document.getElementById('bonusMonths').value) || 0;
+    const monthlyFee = parseFloat(document.getElementById('monthlyFee').value);
+    const setupFee = parseFloat(document.getElementById('setupFee').value) || 600;
+    const paidMonths = parseFloat(document.getElementById('paidMonths').value);
+
+    if (!startVal || !endVal || isNaN(contractMonths) || isNaN(monthlyFee) || isNaN(paidMonths)) {
+      alert('請填寫所有必填欄位');
+      return;
+    }
+
+    const start = new Date(startVal);
+    const end = new Date(endVal);
+    if (end <= start) { alert('解約日期須晚於開始日期'); return; }
+
+    const usedDays = daysBetween(start, end);
+    const totalMonths = contractMonths + bonusMonths; // 含贈送
+
+    // ① 合約月費總額（四捨五入）
+    const contractTotal = r(monthlyFee * contractMonths);
+
+    // ② 月平均價格 = 月費總額 ÷ (合約月數＋贈送月數)（四捨五入）
+    const monthlyAvg = r(contractTotal / totalMonths);
+
+    // ③ 已使用月數 → 已使用費用（四捨五入）
+    const usedMonths = daysToMonths(usedDays);
+    const usedCost = r(monthlyAvg * usedMonths);
+
+    // ④ 未到期月數 → 手續費（四捨五入）
+    const remainMonths = Math.max(0, totalMonths - usedMonths);
+    let fee = r(monthlyAvg * remainMonths * 0.20);
+    const feeBeforeCap = fee;
+
+    // ⑤ 應給付總額 = 已使用費用 + 手續費 + 系統建置費
+    const totalOwed = r(usedCost + fee + setupFee);
+
+    // ⑥ 已繳總額 = 月費 × 已繳月數 + 系統建置費
+    const totalPaid = r((monthlyFee * paidMonths) + setupFee);
+
+    // 差額（四捨五入）
+    let diff = r(totalPaid - totalOwed);
+
+    // 上限檢查：手續費 + 應補足金額 ≤ $6,000
+    let capApplied = false;
+    let capNote = '';
+    if (diff < 0) {
+      const supplement = r(-diff);
+      if (r(fee + supplement) > 6000) {
+        capApplied = true;
+        const excess = r(fee + supplement) - 6000;
+        fee = Math.max(0, r(fee - excess));
+        const totalOwedCapped = r(usedCost + fee + setupFee);
+        diff = r(totalPaid - totalOwedCapped);
+        capNote = `原始手續費 ${fmt(feeBeforeCap)}，加計補繳差額超過上限 $6,000，依法調整手續費為 ${fmt(fee)}`;
+      }
+    } else {
+      if (fee > 6000) {
+        capApplied = true;
+        fee = 6000;
+        const totalOwedCapped = r(usedCost + fee + setupFee);
+        diff = r(totalPaid - totalOwedCapped);
+        capNote = `手續費超過上限，依法以 $6,000 計算`;
+      }
+    }
+
+    const totalOwedFinal = r(usedCost + fee + setupFee);
+
+    // Check 7-day rule
+    const withinSeven = usedDays <= 7;
+
+    // Show result
+    const resultEl = document.getElementById('result');
+    resultEl.style.display = 'block';
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    document.getElementById('sevenDay').style.display = withinSeven ? 'block' : 'none';
+    document.getElementById('normalResult').style.display = withinSeven ? 'none' : 'block';
+
+    if (withinSeven) return;
+
+    // Fill summary
+    document.getElementById('r-monthly').textContent = fmt(monthlyAvg);
+    document.getElementById('r-usedM').textContent = usedMonths + ' 個月（' + usedDays + '天）';
+    document.getElementById('r-remainM').textContent = remainMonths + ' 個月';
+    document.getElementById('r-paidTotal').textContent = fmt(totalPaid);
+    document.getElementById('r-shouldPay').textContent = fmt(totalOwedFinal);
+    document.getElementById('r-diff').textContent = fmtSigned(diff);
+
+    // Fee box
+    document.getElementById('r-fee').textContent = fmt(fee);
+    document.getElementById('r-fee-note').textContent =
+      `月平均 ${fmt(monthlyAvg)} × ${remainMonths}月 × 20%` + (capApplied ? '（已套用上限）' : '');
+
+    // Cap alert
+    const capAlert = document.getElementById('capAlert');
+    if (capApplied) {
+      capAlert.style.display = 'block';
+      capAlert.textContent = '⚠ ' + capNote;
+    } else {
+      capAlert.style.display = 'none';
+    }
+
+    // Outcome
+    document.getElementById('rbox-refund').style.display = 'none';
+    document.getElementById('rbox-pay').style.display = 'none';
+    document.getElementById('rbox-zero').style.display = 'none';
+
+    if (diff > 0) {
+      document.getElementById('rbox-refund').style.display = 'block';
+      document.getElementById('r-refund').textContent = fmt(diff);
+    } else if (diff < 0) {
+      document.getElementById('rbox-pay').style.display = 'block';
+      document.getElementById('r-pay').textContent = fmt(-diff);
+      document.getElementById('r-pay-note').textContent = '已繳費用不足以涵蓋使用費用及手續費，需補繳差額';
+    } else {
+      document.getElementById('rbox-zero').style.display = 'block';
+    }
+
+    // Breakdown（顯示每步四捨五入後的數字）
+    document.getElementById('d-contractTotal').textContent = fmt(contractTotal);
+    document.getElementById('d-monthly').textContent =
+      `${fmt(contractTotal)} ÷ (${contractMonths}+${bonusMonths}) = ${fmt(monthlyAvg)}`;
+    document.getElementById('d-usedCost').textContent =
+      `${fmt(monthlyAvg)} × ${usedMonths}月 = ${fmt(usedCost)}`;
+    document.getElementById('d-feeCalc').textContent =
+      `${fmt(monthlyAvg)} × ${remainMonths}月 × 20% = ${fmt(fee)}`;
+    document.getElementById('d-setup').textContent = fmt(setupFee) + '（不退）';
+    document.getElementById('d-totalOwed').textContent = fmt(totalOwedFinal);
+    document.getElementById('d-totalPaid').textContent = fmt(totalPaid);
+
+    const finalEl = document.getElementById('d-final');
+    if (diff > 0) {
+      finalEl.textContent = fmt(diff) + ' ← HF 應退';
+      finalEl.style.color = 'var(--green)';
+    } else if (diff < 0) {
+      finalEl.textContent = fmt(diff) + ' ← 會員應補繳 ' + fmt(-diff);
+      finalEl.style.color = 'var(--accent2)';
+    } else {
+      finalEl.textContent = '$0（互不給付）';
+      finalEl.style.color = 'var(--accent)';
+    }
+
+    // Formula
+    document.getElementById('f-monthly').textContent =
+      `${fmt(contractTotal)} ÷ (${contractMonths} + ${bonusMonths}) 個月`;
+    document.getElementById('f-monthly-r').textContent = `= ${fmt(monthlyAvg)} / 月`;
+    document.getElementById('f-fee').textContent =
+      `${fmt(monthlyAvg)} × ${remainMonths}月 × 20%`;
+    document.getElementById('f-fee-r').textContent = `= ${fmt(fee)}${capApplied ? '（已設上限）' : ''}`;
+  }
+</script>
+</body>
+</html>
